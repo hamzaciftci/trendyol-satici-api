@@ -4,11 +4,16 @@
 
 ![Trendyol Satıcı API](https://img.shields.io/badge/Trendyol-Satıcı%20API-FF6000?style=for-the-badge&logo=typescript&logoColor=white)
 
+[![Version](https://img.shields.io/badge/version-1.1.0-blue.svg?style=flat-square)](https://github.com/hamzaciftci/trendyol-satici-api/releases)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](https://opensource.org/licenses/MIT)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-blue.svg?style=flat-square)](https://www.typescriptlang.org/)
-[![Node.js](https://img.shields.io/badge/Node.js-18+-green.svg?style=flat-square)](https://nodejs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-3178C6.svg?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Node.js](https://img.shields.io/badge/Node.js-18+-339933.svg?style=flat-square&logo=node.js&logoColor=white)](https://nodejs.org/)
+[![GitHub Stars](https://img.shields.io/github/stars/hamzaciftci/trendyol-satici-api?style=flat-square&logo=github)](https://github.com/hamzaciftci/trendyol-satici-api/stargazers)
+[![GitHub Issues](https://img.shields.io/github/issues/hamzaciftci/trendyol-satici-api?style=flat-square&logo=github)](https://github.com/hamzaciftci/trendyol-satici-api/issues)
 
 **Trendyol Marketplace'te satış yapan mağazalar için TypeScript/Node.js API client**
+
+🇹🇷 Türkçe | [English](./README.en.md)
 
 </div>
 
@@ -181,6 +186,24 @@ await client.getOrders({
     status: 'Created',
     size: 100
 });
+```
+
+### İade (Claims) Filtreleri
+
+```typescript
+// Son 30 günün iadelerini çek
+const iadeler = await client.getRecentClaims(30);
+
+// Filtreyle iade çek
+await client.getClaims({
+    startDate: '2024-01-01',
+    endDate: '2024-01-31',
+    claimStatus: 'Created',
+    size: 50
+});
+
+// İade nedenlerini getir
+const nedenler = await client.getClaimIssueReasons();
 ```
 
 ## 🔄 Son Güncelleme: Trendyol API Değişiklikleri
