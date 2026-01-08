@@ -118,6 +118,35 @@ async function testGetBrands() {
     return response;
 }
 
+async function testGetClaims() {
+    console.log('\n📦 İADELER (Son 30 gün, 3 adet)');
+    console.log('─'.repeat(50));
+    
+    const response = await client.getRecentClaims(30, 3);
+    
+    if (response.success && response.data) {
+        console.log(`✅ ${response.data.length} iade talebi bulundu\n`);
+        
+        if (response.data.length === 0) {
+            console.log('   Son 30 günde iade talebi yok.');
+        } else {
+            response.data.forEach((claim, index) => {
+                const date = claim.claimDate ? new Date(claim.claimDate).toLocaleDateString('tr-TR') : 'N/A';
+                console.log(`${index + 1}. İade #${claim.claimId || claim.id}`);
+                console.log(`   Sipariş: ${claim.orderNumber || 'N/A'}`);
+                console.log(`   Tarih: ${date}`);
+                console.log(`   Durum: ${claim.claimStatus || 'N/A'}`);
+                console.log(`   Neden: ${claim.claimReason || 'N/A'}`);
+                console.log('');
+            });
+        }
+    } else {
+        console.log(`❌ Hata: ${response.error}`);
+    }
+    
+    return response;
+}
+
 // ============================================
 // ANA TEST RUNNER
 // ============================================
@@ -148,6 +177,7 @@ async function runAllTests() {
     
     await testGetProducts();
     await testGetOrders();
+    await testGetClaims();
     await testGetQuestions();
     await testGetBrands();
     

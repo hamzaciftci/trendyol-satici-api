@@ -105,6 +105,9 @@ const sorular = await client.getUnansweredQuestions();
 | | `getProductByBarcode()` | Barkodla ürün arama |
 | **Siparişler** | `getOrders()` | Sipariş listesi |
 | | `getRecentOrders()` | Son X günün siparişleri |
+| **İadeler** | `getClaims()` | İade talepleri listesi |
+| | `getRecentClaims()` | Son X günün iadeleri |
+| | `getClaimIssueReasons()` | İade nedenleri |
 | **Markalar** | `getBrands()` | Marka listesi |
 | | `getBrandByName()` | İsimle marka arama |
 | **Kategoriler** | `getCategories()` | Kategori listesi |
@@ -184,8 +187,21 @@ await client.getOrders({
 
 **2 Şubat 2026** tarihinde uygulanacak değişiklikler sisteme entegre edildi:
 
-- Yeni alanlar: `cancelledBy`, `cancelReason`, `lineTotalDiscount`, vb.
-- İsim değişiklikleri: `totalPrice` → `packageTotalPrice`, vb.
+### Sipariş Paketleri (Order Packages)
+- **Yeni alanlar:** `cancelledBy`, `cancelReason`, `cancelReasonCode`, `lineTotalDiscount`, `packageTotalDiscount`
+- **İsim değişiklikleri:** 
+  - `totalPrice` → `packageTotalPrice`
+  - `grossAmount` → `packageGrossAmount`
+  - `merchantSku` → `stockCode`
+  - `merchantId` → `sellerId`
+  - `vatBaseAmount` → `vatRate`
+  - ve diğerleri...
+- **Kaldırılan alanlar:** `sku`, `scheduledDeliveryStoreId`, `agreedDeliveryDateExtendible`, `groupDeal`, vb.
+
+### İade Paketleri (Claims)
+- **İsim değişiklikleri:**
+  - `content/id` → `claimId`
+  - `vatBaseAmount` → `vatRate`
 
 Detaylar için `src/types.ts` dosyasına bakın.
 

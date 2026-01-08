@@ -462,6 +462,136 @@ export interface UpdateStatusRequest {
 }
 
 // ============================================
+// CLAIMS (İADE) TYPES
+// Güncelleme: 2 Şubat 2026 API değişiklikleri
+// İsimlendirme değişiklikleri (eski → yeni):
+// - content/id → claimId
+// - vatBaseAmount → vatRate
+// ============================================
+
+/**
+ * Trendyol İade/Claim Arayüzü
+ */
+export interface TrendyolClaim {
+    /** Claim ID (eski: content/id) */
+    claimId?: number;
+    
+    orderNumber?: string;
+    orderDate?: number;
+    customerId?: string;
+    customerFirstName?: string;
+    customerLastName?: string;
+    
+    /** Claim oluşturulma tarihi */
+    claimDate?: number;
+    
+    /** Claim durumu */
+    claimStatus?: string;
+    
+    /** Claim tipi */
+    claimType?: string;
+    
+    /** İade nedeni */
+    claimReason?: string;
+    
+    /** İade nedeni kodu */
+    claimReasonCode?: string;
+    
+    /** Claim satırları */
+    claimItems?: TrendyolClaimItem[];
+    
+    /** Kargo takip numarası */
+    cargoTrackingNumber?: string;
+    
+    /** Kargo sağlayıcı adı */
+    cargoProviderName?: string;
+    
+    /** Onay durumu */
+    approved?: boolean;
+    
+    /** İade adresi */
+    returnAddress?: ShipmentAddress;
+    
+    // Backward compatibility için eski alan isimleri (2 Şubat 2026'da kaldırılacak)
+    /** @deprecated claimId kullanın */
+    id?: number;
+    
+    [key: string]: any;
+}
+
+/**
+ * Claim Satırı Arayüzü
+ */
+export interface TrendyolClaimItem {
+    /** Satır ID */
+    lineId?: number;
+    
+    productId?: string;
+    productName?: string;
+    barcode?: string;
+    
+    /** Stok kodu (eski: merchantSku) */
+    stockCode?: string;
+    
+    /** İçerik ID (eski: productCode) */
+    contentId?: string;
+    
+    quantity?: number;
+    
+    /** Birim fiyat */
+    lineUnitPrice?: number;
+    
+    /** Brüt tutar */
+    lineGrossAmount?: number;
+    
+    /** KDV oranı (eski: vatBaseAmount) */
+    vatRate?: number;
+    
+    /** Claim item durumu */
+    claimItemStatus?: string;
+    
+    /** İade nedeni */
+    claimItemReason?: string;
+    
+    productSize?: string;
+    productColor?: string;
+    
+    // Backward compatibility için eski alan isimleri (2 Şubat 2026'da kaldırılacak)
+    /** @deprecated stockCode kullanın */
+    merchantSku?: string;
+    /** @deprecated contentId kullanın */
+    productCode?: string;
+    /** @deprecated vatRate kullanın */
+    vatBaseAmount?: number;
+    
+    [key: string]: any;
+}
+
+/**
+ * Claim Filtreleri
+ */
+export interface ClaimFilters {
+    page?: number;
+    size?: number;
+    startDate?: string | number;
+    endDate?: string | number;
+    claimStatus?: string;
+    orderNumber?: string;
+    claimIds?: string;
+    orderByField?: string;
+    orderByDirection?: 'ASC' | 'DESC';
+}
+
+/**
+ * Claim Issue Reasons (İade Nedenleri)
+ */
+export interface ClaimIssueReason {
+    id: number;
+    name: string;
+    code?: string;
+}
+
+// ============================================
 // KALDIRILAN ALANLAR (2 Şubat 2026'dan itibaren)
 // Bu alanlar artık API response'larında yer almayacak:
 // - sku

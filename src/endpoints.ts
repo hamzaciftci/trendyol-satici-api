@@ -60,6 +60,17 @@ export const WEBHOOK_ENDPOINTS = {
 } as const;
 
 // ============================================
+// CLAIMS (İADE) ENDPOINTS
+// Güncelleme: 2 Şubat 2026 API değişiklikleri
+// ============================================
+
+export const CLAIMS_ENDPOINTS = {
+    CLAIMS: '/integration/order/sellers/{supplierId}/claims',
+    CLAIM_BY_ID: '/integration/order/sellers/{supplierId}/claims/{claimId}',
+    CLAIM_ISSUE_REASONS: '/integration/order/sellers/{supplierId}/claims/issue-reasons',
+} as const;
+
+// ============================================
 // SELLER ENDPOINTS
 // ============================================
 
@@ -102,4 +113,12 @@ export function buildWebhooksEndpoint(supplierId: string): string {
 
 export function buildCategoryAttributesEndpoint(categoryId: number): string {
     return buildEndpoint(PRODUCT_ENDPOINTS.CATEGORY_ATTRIBUTES, { categoryId });
+}
+
+export function buildClaimsEndpoint(supplierId: string): string {
+    return buildEndpoint(CLAIMS_ENDPOINTS.CLAIMS, { supplierId });
+}
+
+export function buildClaimIssueReasonsEndpoint(supplierId: string): string {
+    return buildEndpoint(CLAIMS_ENDPOINTS.CLAIM_ISSUE_REASONS, { supplierId });
 }

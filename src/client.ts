@@ -23,6 +23,9 @@ import {
     QuestionAnswer,
     TrendyolWebhook,
     CategoryAttribute,
+    TrendyolClaim,
+    ClaimFilters,
+    ClaimIssueReason,
 } from './types';
 import {
     BASE_URLS,
@@ -33,6 +36,8 @@ import {
     buildQuestionAnswerEndpoint,
     buildWebhooksEndpoint,
     buildCategoryAttributesEndpoint,
+    buildClaimsEndpoint,
+    buildClaimIssueReasonsEndpoint,
 } from './endpoints';
 import {
     buildQueryString,
@@ -483,6 +488,80 @@ export class TrendyolClient {
         validateRequired(webhookId, 'webhookId');
         const endpoint = buildWebhooksEndpoint(this.config.supplierId) + `/${webhookId}`;
         return this.delete(endpoint);
+    }
+
+    // ============================================
+    // İADE (CLAIMS) İŞLEMLERİ
+    // Güncelleme: 2 Şubat 2026 API değişiklikleri
+    // ============================================
+
+    /**
+     * İade taleplerini (claims) listele
+     */
+    async getClaims(filters: ClaimFilters = {}): Promise<ApiResponse<TrendyolClaim[]>> {
+        const pagination = buildPaginationParams(filters.page, filters.size);
+        const params: Record<string, any> = { ...pagination };
+
+        if (filters.claimStatus) params.claimStatus = filters.claimStatus;
+        if (filters.orderNumber) params.orderNumber = filters.orderNumber;
+        if (filters.claimIds) params.claimIds = filters.claimIds;
+        if (filters.orderByField) params.orderByField = filters.orderByField;
+        if (filters.orderByDirection) params.orderByDirection = filters.orderByDirection;
+        
+        if (filters.startDate) {
+            params.startDate = typeof filters.startDate === 'string' 
+                ? dateToTimestamp(filters.startDate) 
+                : filters.startDate;
+        }
+        if (filters.endDate) {
+            params.endDate = typeof filters.endDate === 'string' 
+                ? dateToTimestamp(filters.endDate) 
+                : filters.endDate;
+        }
+
+        const endpoint = buildClaimsEndpoint(this.config.supplierId) + buildQueryString(params);
+        const response = await this.get<any>(endpoint);
+
+        if (response.success && response.data) {
+            return {
+                ...response,
+                data: extractContent<TrendyolClaim>(response.data),
+            };
+        }
+
+        return response as ApiResponse<TrendyolClaim[]>;
+    }
+
+    /**
+     * Son X günün iade taleplerini getir
+     */
+    async getRecentClaims(days: number = 7, size: number = 50): Promise<ApiResponse<TrendyolClaim[]>> {
+        const endDate = Date.now();
+        const startDate = endDate - (days * 24 * 60 * 60 * 1000);
+        
+        return this.getClaims({
+            startDate,
+            endDate,
+            size,
+        });
+    }
+
+    /**
+     * İade nedenlerini getir
+     */
+    async getClaimIssueReasons(): Promise<ApiResponse<ClaimIssueReason[]>> {
+        const endpoint = buildClaimIssueReasonsEndpoint(this.config.supplierId);
+        const response = await this.get<any>(endpoint);
+
+        if (response.success && response.data) {
+            const reasons = response.data.issueReasons || response.data;
+            return {
+                ...response,
+                data: Array.isArray(reasons) ? reasons : [],
+            };
+        }
+
+        return response as ApiResponse<ClaimIssueReason[]>;
     }
 
     // ============================================
