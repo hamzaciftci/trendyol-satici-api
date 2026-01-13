@@ -1,0 +1,68 @@
+{
+	"name": "trendyol-satici-api",
+	"version": "1.2.0",
+	"description": "Trendyol Marketplace Satıcı API'si için TypeScript client. Ürün, sipariş, iade, marka, kategori ve müşteri soruları yönetimi.",
+	"keywords": [
+		"trendyol",
+		"trendyol-api",
+		"trendyol-satici",
+		"trendyol-seller",
+		"trendyol-marketplace",
+		"trendyol-integration",
+		"trendyol-sdk",
+		"marketplace",
+		"marketplace-api",
+		"seller-api",
+		"e-ticaret",
+		"ecommerce",
+		"e-commerce",
+		"typescript",
+		"nodejs",
+		"node",
+		"api-client",
+		"sdk",
+		"turkey",
+		"türkiye",
+		"claims",
+		"orders",
+		"products"
+	],
+	"license": "MIT",
+	"author": {
+		"name": "Hamza ÇİFTÇİ",
+		"email": "hamzaciftci80@gmail.com",
+		"url": "https://github.com/hamzaciftci"
+	},
+	"homepage": "https://github.com/hamzaciftci/trendyol-satici-api#readme",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/hamzaciftci/trendyol-satici-api.git"
+	},
+	"bugs": {
+		"url": "https://github.com/hamzaciftci/trendyol-satici-api/issues"
+	},
+	"main": "dist/index.js",
+	"types": "dist/index.d.ts",
+	"files": [
+		"dist",
+		"README.md",
+		"LICENSE"
+	],
+	"scripts": {
+		"build": "tsc",
+		"dev": "tsc --watch",
+		"test": "npx ts-node test.ts",
+		"clean": "rimraf dist",
+		"prepublishOnly": "npm run build",
+		"prepare": "npm run build"
+	},
+	"devDependencies": {
+		"@types/node": "^20.0.0",
+		"rimraf": "^5.0.0",
+		"ts-node": "^10.9.0",
+		"typescript": "^5.0.0"
+	},
+	"engines": {
+		"node": ">=18.0.0"
+	}
+}
