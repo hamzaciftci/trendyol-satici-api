@@ -615,6 +615,193 @@ export interface ClaimIssueReason {
 }
 
 // ============================================
+// FINANCE TYPES (Cari Hesap Ekstresi)
+// Güncelleme: 29 Ocak 2026 - transactionTypes ve paymentDate parametreleri eklendi
+// @see https://developers.trendyol.com/docs/cari-hesap-ekstresi-entegrasyonu
+// ============================================
+
+/**
+ * Settlements İşlem Türleri
+ */
+export type SettlementTransactionType =
+    | 'Sale'
+    | 'Return'
+    | 'Discount'
+    | 'DiscountCancel'
+    | 'Coupon'
+    | 'CouponCancel'
+    | 'ProvisionPositive'
+    | 'ProvisionNegative'
+    | 'SellerRevenuePositive'
+    | 'SellerRevenueNegative'
+    | 'CommissionPositive'
+    | 'CommissionNegative'
+    | 'CommissionPositiveCancel'
+    | 'CommissionNegativeCancel';
+
+/**
+ * OtherFinancials İşlem Türleri
+ */
+export type OtherFinancialsTransactionType =
+    | 'CashAdvance'
+    | 'WireTransfer'
+    | 'IncomingTransfer'
+    | 'ReturnInvoice'
+    | 'CommissionAgreementInvoice'
+    | 'PaymentOrder'
+    | 'DeductionInvoices'
+    | 'FinancialItem'
+    | 'Stoppage';
+
+/**
+ * Settlements Filtreleri
+ *
+ * @example
+ * ```typescript
+ * // Tek işlem türü ile sorgulama
+ * await client.getSettlements({
+ *     transactionType: 'Sale',
+ *     startDate: 1706745600000,
+ *     endDate: 1707004800000
+ * });
+ *
+ * // Birden fazla işlem türü ile sorgulama (YENİ - 29 Ocak 2026)
+ * await client.getSettlements({
+ *     transactionTypes: ['Sale', 'Return', 'Discount'],
+ *     startDate: 1706745600000,
+ *     endDate: 1707004800000,
+ *     paymentDate: 1707091200000
+ * });
+ * ```
+ */
+export interface SettlementsFilters {
+    /** Tek işlem türü (transactionTypes ile birlikte kullanılmaz) */
+    transactionType?: SettlementTransactionType;
+
+    /**
+     * Birden fazla işlem türü (YENİ - 29 Ocak 2026)
+     * Tek istekte birden fazla işlem türüne ait muhasebe kayıtlarını listeleyebilirsiniz.
+     */
+    transactionTypes?: SettlementTransactionType[];
+
+    /** Başlangıç tarihi (timestamp - milisaniye) - Zorunlu */
+    startDate: number;
+
+    /** Bitiş tarihi (timestamp - milisaniye) - Zorunlu, max 15 gün aralık */
+    endDate: number;
+
+    /**
+     * Ödemeye girebileceği en erken tarih (YENİ - 29 Ocak 2026)
+     * Muhasebe kayıtlarını bu filtre ile sorgulayabilirsiniz.
+     */
+    paymentDate?: number;
+
+    /** Sayfa numarası */
+    page?: number;
+
+    /** Sayfa boyutu (500 veya 1000, varsayılan 500) */
+    size?: 500 | 1000;
+}
+
+/**
+ * OtherFinancials Filtreleri
+ */
+export interface OtherFinancialsFilters {
+    /** Tek işlem türü (transactionTypes ile birlikte kullanılmaz) */
+    transactionType?: OtherFinancialsTransactionType;
+
+    /**
+     * Birden fazla işlem türü (YENİ - 29 Ocak 2026)
+     */
+    transactionTypes?: OtherFinancialsTransactionType[];
+
+    /** Başlangıç tarihi (timestamp - milisaniye) - Zorunlu */
+    startDate: number;
+
+    /** Bitiş tarihi (timestamp - milisaniye) - Zorunlu, max 15 gün aralık */
+    endDate: number;
+
+    /**
+     * Ödemeye girebileceği en erken tarih (YENİ - 29 Ocak 2026)
+     */
+    paymentDate?: number;
+
+    /** Sayfa numarası */
+    page?: number;
+
+    /** Sayfa boyutu (500 veya 1000, varsayılan 500) */
+    size?: 500 | 1000;
+}
+
+/**
+ * Settlement Kaydı
+ */
+export interface SettlementRecord {
+    /** İşlem tarihi */
+    transactionDate?: number;
+
+    /** Barkod */
+    barcode?: string;
+
+    /** İşlem türü */
+    transactionType?: string;
+
+    /** Borç tutarı */
+    debt?: number;
+
+    /** Alacak tutarı */
+    credit?: number;
+
+    /** Komisyon tutarı */
+    commissionAmount?: number;
+
+    /** Satıcı geliri */
+    sellerRevenue?: number;
+
+    /** Sipariş numarası */
+    orderNumber?: string;
+
+    /** Ödeme emri ID */
+    paymentOrderId?: number;
+
+    /** Paket ID */
+    shipmentPackageId?: number;
+
+    /** Ödeme tarihi */
+    paymentDate?: number;
+
+    [key: string]: any;
+}
+
+/**
+ * OtherFinancials Kaydı
+ */
+export interface OtherFinancialsRecord {
+    /** İşlem tarihi */
+    transactionDate?: number;
+
+    /** İşlem türü */
+    transactionType?: string;
+
+    /** Borç tutarı */
+    debt?: number;
+
+    /** Alacak tutarı */
+    credit?: number;
+
+    /** Açıklama */
+    description?: string;
+
+    /** Ödeme emri ID */
+    paymentOrderId?: number;
+
+    /** Ödeme tarihi */
+    paymentDate?: number;
+
+    [key: string]: any;
+}
+
+// ============================================
 // KALDIRILAN ALANLAR (2 Şubat 2026'dan itibaren)
 // Bu alanlar artık API response'larında yer almayacak:
 // - sku

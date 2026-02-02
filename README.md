@@ -113,6 +113,8 @@ const sorular = await client.getUnansweredQuestions();
 | **İadeler** | `getClaims()` | İade talepleri listesi |
 | | `getRecentClaims()` | Son X günün iadeleri |
 | | `getClaimIssueReasons()` | İade nedenleri |
+| **Finans** | `getSettlements()` | Satış/iade/indirim kayıtları |
+| | `getOtherFinancials()` | Havale/fatura/kesinti kayıtları |
 | **Markalar** | `getBrands()` | Marka listesi |
 | | `getBrandByName()` | İsimle marka arama |
 | **Kategoriler** | `getCategories()` | Kategori listesi |
@@ -206,9 +208,56 @@ await client.getClaims({
 const nedenler = await client.getClaimIssueReasons();
 ```
 
+### Finans (Cari Hesap) Filtreleri
+
+```typescript
+// Satış kayıtlarını çek
+const satislar = await client.getSettlements({
+    transactionType: 'Sale',
+    startDate: 1706745600000,  // Timestamp (ms)
+    endDate: 1707004800000
+});
+
+// Birden fazla işlem türü ile sorgulama (YENİ)
+const kayitlar = await client.getSettlements({
+    transactionTypes: ['Sale', 'Return', 'Discount'],
+    startDate: 1706745600000,
+    endDate: 1707004800000,
+    paymentDate: 1707091200000  // Ödeme tarihi filtresi (YENİ)
+});
+
+// Diğer finansal kayıtları çek
+const finansallar = await client.getOtherFinancials({
+    transactionTypes: ['WireTransfer', 'PaymentOrder'],
+    startDate: 1706745600000,
+    endDate: 1707004800000
+});
+```
+
 ## 🔄 Son Güncelleme: Trendyol API Değişiklikleri
 
-**2 Şubat 2026** tarihinde uygulanacak değişiklikler sisteme entegre edildi:
+### 29 Ocak 2026 - Muhasebe ve Finans Entegrasyonu
+
+Cari hesap ekstresi entegrasyonuna yeni parametreler eklendi:
+
+- **`transactionTypes`**: Tek istekte birden fazla işlem türüne ait muhasebe kayıtlarını listeleyebilirsiniz
+- **`paymentDate`**: Muhasebe kayıtlarını "ödemeye girebileceği en erken tarih" filtresiyle sorgulayabilirsiniz
+
+```typescript
+// Birden fazla işlem türü ile sorgulama
+const kayitlar = await client.getSettlements({
+    transactionTypes: ['Sale', 'Return', 'Discount'],
+    startDate: 1706745600000,
+    endDate: 1707004800000,
+    paymentDate: 1707091200000
+});
+```
+
+Detaylar: [Cari Hesap Ekstresi Entegrasyonu](https://developers.trendyol.com/docs/cari-hesap-ekstresi-entegrasyonu)
+
+### 2 Şubat 2026 - Sipariş ve İade Değişiklikleri
+
+Uygulanacak değişiklikler sisteme entegre edildi:
 
 ### Sipariş Paketleri (Order Packages)
 - **Yeni alanlar:** `cancelledBy`, `cancelReason`, `cancelReasonCode`, `lineTotalDiscount`, `packageTotalDiscount`

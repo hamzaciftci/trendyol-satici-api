@@ -26,6 +26,10 @@ import {
     TrendyolClaim,
     ClaimFilters,
     ClaimIssueReason,
+    SettlementsFilters,
+    OtherFinancialsFilters,
+    SettlementRecord,
+    OtherFinancialsRecord,
 } from './types';
 import {
     BASE_URLS,
@@ -38,6 +42,8 @@ import {
     buildCategoryAttributesEndpoint,
     buildClaimsEndpoint,
     buildClaimIssueReasonsEndpoint,
+    buildSettlementsEndpoint,
+    buildOtherFinancialsEndpoint,
 } from './endpoints';
 import {
     buildQueryString,
@@ -580,6 +586,115 @@ export class TrendyolClient {
         }
 
         return response as ApiResponse<ClaimIssueReason[]>;
+    }
+
+    // ============================================
+    // FİNANS İŞLEMLERİ (Cari Hesap Ekstresi)
+    // Güncelleme: 29 Ocak 2026 - transactionTypes ve paymentDate parametreleri eklendi
+    // @see https://developers.trendyol.com/docs/cari-hesap-ekstresi-entegrasyonu
+    // ============================================
+
+    /**
+     * Settlements (Satış/İade/İndirim) kayıtlarını listele
+     *
+     * @example
+     * ```typescript
+     * // Tek işlem türü ile sorgulama
+     * const satislar = await client.getSettlements({
+     *     transactionType: 'Sale',
+     *     startDate: 1706745600000,
+     *     endDate: 1707004800000
+     * });
+     *
+     * // Birden fazla işlem türü ile sorgulama (YENİ - 29 Ocak 2026)
+     * const kayitlar = await client.getSettlements({
+     *     transactionTypes: ['Sale', 'Return', 'Discount'],
+     *     startDate: 1706745600000,
+     *     endDate: 1707004800000,
+     *     paymentDate: 1707091200000
+     * });
+     * ```
+     */
+    async getSettlements(filters: SettlementsFilters): Promise<ApiResponse<SettlementRecord[]>> {
+        const params: Record<string, any> = {
+            startDate: filters.startDate,
+            endDate: filters.endDate,
+        };
+
+        // transactionTypes (çoklu) veya transactionType (tekli)
+        if (filters.transactionTypes && filters.transactionTypes.length > 0) {
+            params.transactionTypes = filters.transactionTypes.join(',');
+        } else if (filters.transactionType) {
+            params.transactionType = filters.transactionType;
+        }
+
+        // paymentDate (YENİ - 29 Ocak 2026)
+        if (filters.paymentDate) {
+            params.paymentDate = filters.paymentDate;
+        }
+
+        if (filters.page !== undefined) params.page = filters.page;
+        if (filters.size !== undefined) params.size = filters.size;
+
+        const endpoint = buildSettlementsEndpoint(this.config.supplierId) + buildQueryString(params);
+        const response = await this.get<any>(endpoint);
+
+        if (response.success && response.data) {
+            return {
+                ...response,
+                data: extractContent<SettlementRecord>(response.data),
+            };
+        }
+
+        return response as ApiResponse<SettlementRecord[]>;
+    }
+
+    /**
+     * OtherFinancials (Havale/Fatura/Kesinti vb.) kayıtlarını listele
+     *
+     * @example
+     * ```typescript
+     * // Birden fazla işlem türü ile sorgulama (YENİ - 29 Ocak 2026)
+     * const finansallar = await client.getOtherFinancials({
+     *     transactionTypes: ['WireTransfer', 'PaymentOrder'],
+     *     startDate: 1706745600000,
+     *     endDate: 1707004800000,
+     *     paymentDate: 1707091200000
+     * });
+     * ```
+     */
+    async getOtherFinancials(filters: OtherFinancialsFilters): Promise<ApiResponse<OtherFinancialsRecord[]>> {
+        const params: Record<string, any> = {
+            startDate: filters.startDate,
+            endDate: filters.endDate,
+        };
+
+        // transactionTypes (çoklu) veya transactionType (tekli)
+        if (filters.transactionTypes && filters.transactionTypes.length > 0) {
+            params.transactionTypes = filters.transactionTypes.join(',');
+        } else if (filters.transactionType) {
+            params.transactionType = filters.transactionType;
+        }
+
+        // paymentDate (YENİ - 29 Ocak 2026)
+        if (filters.paymentDate) {
+            params.paymentDate = filters.paymentDate;
+        }
+
+        if (filters.page !== undefined) params.page = filters.page;
+        if (filters.size !== undefined) params.size = filters.size;
+
+        const endpoint = buildOtherFinancialsEndpoint(this.config.supplierId) + buildQueryString(params);
+        const response = await this.get<any>(endpoint);
+
+        if (response.success && response.data) {
+            return {
+                ...response,
+                data: extractContent<OtherFinancialsRecord>(response.data),
+            };
+        }
+
+        return response as ApiResponse<OtherFinancialsRecord[]>;
     }
 
     // ============================================

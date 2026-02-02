@@ -71,6 +71,16 @@ export const CLAIMS_ENDPOINTS = {
 } as const;
 
 // ============================================
+// FINANCE ENDPOINTS (Cari Hesap Ekstresi)
+// Güncelleme: 29 Ocak 2026 - transactionTypes ve paymentDate parametreleri eklendi
+// ============================================
+
+export const FINANCE_ENDPOINTS = {
+    SETTLEMENTS: '/integration/finance/che/sellers/{sellerId}/settlements',
+    OTHER_FINANCIALS: '/integration/finance/che/sellers/{sellerId}/otherfinancials',
+} as const;
+
+// ============================================
 // SELLER ENDPOINTS
 // ============================================
 
@@ -121,4 +131,12 @@ export function buildClaimsEndpoint(supplierId: string): string {
 
 export function buildClaimIssueReasonsEndpoint(supplierId: string): string {
     return buildEndpoint(CLAIMS_ENDPOINTS.CLAIM_ISSUE_REASONS, { supplierId });
+}
+
+export function buildSettlementsEndpoint(sellerId: string): string {
+    return buildEndpoint(FINANCE_ENDPOINTS.SETTLEMENTS, { sellerId });
+}
+
+export function buildOtherFinancialsEndpoint(sellerId: string): string {
+    return buildEndpoint(FINANCE_ENDPOINTS.OTHER_FINANCIALS, { sellerId });
 }
