@@ -98,25 +98,19 @@ export interface ProductFilters {
 
 // ============================================
 // ORDER TYPES
-// Güncelleme: Trendyol API değişiklikleri (2 Şubat 2026)
+// Güncelleme: 2 Şubat 2026 API değişiklikleri uygulandı
 // ============================================
 
 /**
  * Trendyol Sipariş/Paket Arayüzü
- * 
- * İsimlendirme değişiklikleri (eski → yeni):
- * - id → shipmentPackageId
- * - grossAmount → packageGrossAmount
- * - totalDiscount → packageSellerDiscount
- * - totalTyDiscount → packageTyDiscount
- * - totalPrice → packageTotalPrice
+ * @since 2 Şubat 2026 - API alan isimleri güncellendi
  */
 export interface TrendyolOrder {
-    /** Paket ID (eski: id) */
+    /** Paket ID */
     shipmentPackageId?: number;
     orderNumber?: string;
-    
-    /** Satıcı ID (eski: merchantId) */
+
+    /** Satıcı ID */
     sellerId?: number;
     
     customerId?: string;
@@ -127,26 +121,25 @@ export interface TrendyolOrder {
     status?: string;
     shipmentPackageStatus?: string;
     
-    /** Paket brüt tutarı (eski: grossAmount) */
+    /** Paket brüt tutarı */
     packageGrossAmount?: number;
-    
-    /** Paket satıcı indirimi (eski: totalDiscount) */
+
+    /** Paket satıcı indirimi */
     packageSellerDiscount?: number;
-    
-    /** Paket Trendyol indirimi (eski: totalTyDiscount) */
+
+    /** Paket Trendyol indirimi */
     packageTyDiscount?: number;
-    
-    /** Paket toplam indirimi (packageSellerDiscount + packageTyDiscount) - YENİ */
+
+    /** Paket toplam indirimi (packageSellerDiscount + packageTyDiscount) */
     packageTotalDiscount?: number;
     
-    /** 
-     * İndirim görüntüleme bilgileri (YENİ - Ocak 2026)
+    /**
+     * İndirim görüntüleme bilgileri
      * Siparişte uygulanan indirimlerin detay bilgilerini içerir.
-     * @see https://developers.trendyol.com/docs/marketplace/siparis-entegrasyonu/siparis-paketlerini-cekme
      */
     discountDisplays?: DiscountDisplay[];
     
-    /** Paket toplam fiyatı (eski: totalPrice) */
+    /** Paket toplam fiyatı */
     packageTotalPrice?: number;
     
     currencyCode?: string;
@@ -154,117 +147,71 @@ export interface TrendyolOrder {
     cargoTrackingNumber?: string;
     cargoProviderName?: string;
     
-    /** İptal eden (YENİ) */
+    /** İptal eden */
     cancelledBy?: string;
-    
-    /** İptal nedeni (YENİ) */
+
+    /** İptal nedeni */
     cancelReason?: string;
-    
-    /** İptal nedeni kodu (YENİ) */
+
+    /** İptal nedeni kodu */
     cancelReasonCode?: string;
     
     lines?: TrendyolOrderLine[];
     shipmentAddress?: ShipmentAddress;
     invoiceAddress?: InvoiceAddress;
     packageHistories?: PackageHistory[];
-    
-    // Backward compatibility için eski alan isimleri (2 Şubat 2026'da kaldırılacak)
-    /** @deprecated shipmentPackageId kullanın */
-    id?: number;
-    /** @deprecated sellerId kullanın */
-    merchantId?: number;
-    /** @deprecated packageGrossAmount kullanın */
-    grossAmount?: number;
-    /** @deprecated packageSellerDiscount kullanın */
-    totalDiscount?: number;
-    /** @deprecated packageTyDiscount kullanın */
-    totalTyDiscount?: number;
-    /** @deprecated packageTotalPrice kullanın */
-    totalPrice?: number;
-    
+
     [key: string]: any;
 }
 
 /**
  * Sipariş Satırı Arayüzü
- * 
- * İsimlendirme değişiklikleri (eski → yeni):
- * - id → lineId
- * - amount → lineGrossAmount
- * - discount → lineSellerDiscount
- * - tyDiscount → lineTyDiscount
- * - lineItemDiscount → lineItemSellerDiscount
- * - price → lineUnitPrice
- * - merchantSku → stockCode
- * - productCode → contentId
- * - vatBaseAmount → vatRate
+ * @since 2 Şubat 2026 - API alan isimleri güncellendi
  */
 export interface TrendyolOrderLine {
-    /** Satır ID (eski: id) */
+    /** Satır ID */
     lineId?: number;
     
     productId?: string;
     productName?: string;
     quantity?: number;
     
-    /** Satır brüt tutarı (eski: amount) */
+    /** Satır brüt tutarı */
     lineGrossAmount?: number;
-    
-    /** Satır birim fiyatı (eski: price) */
+
+    /** Satır birim fiyatı */
     lineUnitPrice?: number;
-    
-    /** Satır satıcı indirimi (eski: discount) */
+
+    /** Satır satıcı indirimi */
     lineSellerDiscount?: number;
-    
-    /** Satır Trendyol indirimi (eski: tyDiscount) */
+
+    /** Satır Trendyol indirimi */
     lineTyDiscount?: number;
-    
-    /** Satır toplam indirimi (lineSellerDiscount + lineTyDiscount) - YENİ */
+
+    /** Satır toplam indirimi (lineSellerDiscount + lineTyDiscount) */
     lineTotalDiscount?: number;
-    
-    /** Satır öğe satıcı indirimi (eski: lineItemDiscount) */
+
+    /** Satır öğe satıcı indirimi */
     lineItemSellerDiscount?: number;
     
     barcode?: string;
     
-    /** Stok kodu (eski: merchantSku) */
+    /** Stok kodu */
     stockCode?: string;
-    
-    /** İçerik ID (eski: productCode) */
+
+    /** İçerik ID */
     contentId?: string;
     
-    /** KDV oranı (eski: vatBaseAmount) */
+    /** KDV oranı */
     vatRate?: number;
     
     productSize?: string;
     productColor?: string;
     orderLineItemStatusName?: string;
     
-    /** Satıcı ID (eski: merchantId) */
+    /** Satıcı ID */
     sellerId?: number;
-    
-    // Backward compatibility için eski alan isimleri (2 Şubat 2026'da kaldırılacak)
-    /** @deprecated lineId kullanın */
-    id?: number;
-    /** @deprecated lineGrossAmount kullanın */
-    amount?: number;
-    /** @deprecated lineUnitPrice kullanın */
-    price?: number;
-    /** @deprecated lineSellerDiscount kullanın */
-    discount?: number;
-    /** @deprecated lineTyDiscount kullanın */
-    tyDiscount?: number;
-    /** @deprecated lineItemSellerDiscount kullanın */
-    lineItemDiscount?: number;
-    /** @deprecated stockCode kullanın */
-    merchantSku?: string;
-    /** @deprecated sellerId kullanın */
-    merchantId?: number;
-    /** @deprecated contentId kullanın */
-    productCode?: string;
-    /** @deprecated vatRate kullanın */
-    vatBaseAmount?: number;
-    
+
     [key: string]: any;
 }
 
@@ -279,12 +226,8 @@ export interface DiscountDetails {
 }
 
 /**
- * İndirim Görüntüleme Bilgisi (YENİ - Ocak 2026)
- * 
+ * İndirim Görüntüleme Bilgisi
  * Siparişte uygulanan indirimlerin detay bilgilerini içerir.
- * getShipmentPackages servisi ve webhook model üzerinden döner.
- * 
- * @see https://developers.trendyol.com/docs/marketplace/siparis-entegrasyonu/siparis-paketlerini-cekme
  */
 export interface DiscountDisplay {
     /** İndirim adı (örn: "Sepette %20 İndirim", "Trendyol Plus'a Özel Fiyat") */
@@ -486,17 +429,18 @@ export interface UpdateStatusRequest {
 
 // ============================================
 // CLAIMS (İADE) TYPES
-// Güncelleme: 2 Şubat 2026 API değişiklikleri
-// İsimlendirme değişiklikleri (eski → yeni):
-// - content/id → claimId
-// - vatBaseAmount → vatRate
+// Güncelleme: 2 Şubat 2026 API değişiklikleri uygulandı
+// İsimlendirme değişiklikleri:
+// - claimId (eski: content/id)
+// - vatRate (eski: vatBaseAmount)
 // ============================================
 
 /**
  * Trendyol İade/Claim Arayüzü
+ * @since 2 Şubat 2026 - API alan isimleri güncellendi
  */
 export interface TrendyolClaim {
-    /** Claim ID (eski: content/id) */
+    /** Claim ID */
     claimId?: number;
     
     orderNumber?: string;
@@ -535,10 +479,6 @@ export interface TrendyolClaim {
     /** İade adresi */
     returnAddress?: ShipmentAddress;
     
-    // Backward compatibility için eski alan isimleri (2 Şubat 2026'da kaldırılacak)
-    /** @deprecated claimId kullanın */
-    id?: number;
-    
     [key: string]: any;
 }
 
@@ -553,10 +493,10 @@ export interface TrendyolClaimItem {
     productName?: string;
     barcode?: string;
     
-    /** Stok kodu (eski: merchantSku) */
+    /** Stok kodu */
     stockCode?: string;
-    
-    /** İçerik ID (eski: productCode) */
+
+    /** İçerik ID */
     contentId?: string;
     
     quantity?: number;
@@ -567,7 +507,7 @@ export interface TrendyolClaimItem {
     /** Brüt tutar */
     lineGrossAmount?: number;
     
-    /** KDV oranı (eski: vatBaseAmount) */
+    /** KDV oranı */
     vatRate?: number;
     
     /** Claim item durumu */
@@ -578,14 +518,6 @@ export interface TrendyolClaimItem {
     
     productSize?: string;
     productColor?: string;
-    
-    // Backward compatibility için eski alan isimleri (2 Şubat 2026'da kaldırılacak)
-    /** @deprecated stockCode kullanın */
-    merchantSku?: string;
-    /** @deprecated contentId kullanın */
-    productCode?: string;
-    /** @deprecated vatRate kullanın */
-    vatBaseAmount?: number;
     
     [key: string]: any;
 }
