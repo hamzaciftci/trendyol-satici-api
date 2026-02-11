@@ -5,6 +5,42 @@ Tüm önemli değişiklikler bu dosyada belgelenir.
 Format [Keep a Changelog](https://keepachangelog.com/tr/1.0.0/) standardına,
 versiyonlama [Semantic Versioning](https://semver.org/lang/tr/) standardına uygundur.
 
+## [2.0.0] - 2026-02-11
+
+### BREAKING: Content-Based Product Model (v2)
+
+Trendyol 10 Subat 2026 tarihinde urun servislerini barkod bazli yapidan content bazli yapiya gecirdigini duyurdu. Bu surum v2 API'ye tam uyum saglar.
+
+**v1 servisleri 10 Agustos 2026 tarihinde kapanacaktir.**
+
+### Eklendi
+- **Urun Yaratma v2** - `createProductV2()` - Content-based urun olusturma
+- **Urun Filtreleme v2**
+  - `getProductBasicInfoV2()` - Barkod ile temel bilgi sorgulama
+  - `getUnapprovedProductsV2()` - Onaysiz urunleri filtreleme (red nedenleri dahil)
+  - `getApprovedProductsV2()` - Onayli urunleri filtreleme (content + varyant yapisi)
+- **Urun Guncelleme v2**
+  - `updateUnapprovedProductV2()` - Onaysiz urun guncelleme
+  - `updateApprovedContentV2()` - Onayli urun content guncelleme
+  - `updateApprovedVariantV2()` - Onayli urun varyant guncelleme
+  - `updateDeliveryOptionV2()` - Teslimat bilgisi guncelleme
+- **Kategori v2**
+  - `getCategoryAttributesV2()` - Kategori ozellik listesi (varianter, slicer, allowMultiple)
+  - `getCategoryAttributeValuesV2()` - Ozellik degerleri (sayfalamali)
+- v2 TypeScript tipleri: `ApprovedProductV2`, `UnapprovedProductV2`, `ProductBasicInfoV2`, `CategoryAttributeV2` vb.
+- `PaginatedResponseV2` - nextPageToken destekli sayfalama
+- `BatchRequestResponse` tipi
+- Jest test altyapisi (26 test)
+- `examples/v2/` ornek dosyalari (5 adet)
+- Migration guide (README icinde)
+
+### Degisti
+- Paket versiyonu 2.0.0'a yukseltildi
+- `getProducts()`, `getProductByBarcode()`, `getCategoryAttributes()` metodlari `@deprecated` olarak isaretlendi
+- README tamamen yeniden yazildi (v2 gecis rehberi, ornek payload'lar, migration guide)
+- Test altyapisi Jest'e gecti (`npm test` artik Jest calistirir)
+- `npm run test:legacy` ile eski test script'i calistirilabilir
+
 ## [1.2.0] - 2026-01-13
 
 ### Eklendi

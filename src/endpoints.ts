@@ -81,6 +81,42 @@ export const FINANCE_ENDPOINTS = {
 } as const;
 
 // ============================================
+// PRODUCT V2 ENDPOINTS (Content-Based Model)
+// 10 Şubat 2026 - Barkod bazlı yapıdan content bazlı yapıya geçiş
+// Eski v1 servisleri 10 Ağustos 2026'da kapanacak
+// ============================================
+
+export const PRODUCT_V2_ENDPOINTS = {
+    /** Ürün Yaratma v2 */
+    CREATE: '/integration/product/sellers/{sellerId}/v2/products',
+    /** Ürün Filtreleme - Temel Bilgiler v2 */
+    FILTER_BASIC_INFO: '/integration/product/sellers/{sellerId}/product/{barcode}',
+    /** Ürün Filtreleme - Onaysız Ürün v2 */
+    FILTER_UNAPPROVED: '/integration/product/sellers/{sellerId}/products/unapproved',
+    /** Ürün Filtreleme - Onaylı Ürün v2 */
+    FILTER_APPROVED: '/integration/product/sellers/{sellerId}/products/approved',
+    /** Ürün Güncelleme - Onaysız Ürün v2 */
+    UPDATE_UNAPPROVED: '/integration/product/sellers/{sellerId}/products/unapproved-bulk-update',
+    /** Ürün Güncelleme - Onaylı Ürün Content Güncelleme v2 */
+    UPDATE_APPROVED_CONTENT: '/integration/product/sellers/{sellerId}/products/content-bulk-update',
+    /** Ürün Güncelleme - Onaylı Ürün Varyant Güncelleme v2 */
+    UPDATE_APPROVED_VARIANT: '/integration/product/sellers/{sellerId}/products/variant-bulk-update',
+    /** Ürün Güncelleme - Teslimat Bilgisi Güncelleme v2 */
+    UPDATE_DELIVERY_OPTION: '/integration/product/sellers/{sellerId}/products/delivery-option-update',
+} as const;
+
+// ============================================
+// CATEGORY V2 ENDPOINTS
+// ============================================
+
+export const CATEGORY_V2_ENDPOINTS = {
+    /** Kategori Özellik Listesi v2 */
+    ATTRIBUTES: '/integration/product/categories/{categoryId}/attributes',
+    /** Kategori Özellik Değerleri Listesi v2 */
+    ATTRIBUTE_VALUES: '/integration/product/categories/{categoryId}/attributes/{attributeId}/values',
+} as const;
+
+// ============================================
 // SELLER ENDPOINTS
 // ============================================
 
@@ -139,4 +175,48 @@ export function buildSettlementsEndpoint(sellerId: string): string {
 
 export function buildOtherFinancialsEndpoint(sellerId: string): string {
     return buildEndpoint(FINANCE_ENDPOINTS.OTHER_FINANCIALS, { sellerId });
+}
+
+// ============================================
+// V2 ENDPOINT BUILDERS
+// ============================================
+
+export function buildCreateProductV2Endpoint(sellerId: string): string {
+    return buildEndpoint(PRODUCT_V2_ENDPOINTS.CREATE, { sellerId });
+}
+
+export function buildProductBasicInfoV2Endpoint(sellerId: string, barcode: string): string {
+    return buildEndpoint(PRODUCT_V2_ENDPOINTS.FILTER_BASIC_INFO, { sellerId, barcode });
+}
+
+export function buildUnapprovedProductsV2Endpoint(sellerId: string): string {
+    return buildEndpoint(PRODUCT_V2_ENDPOINTS.FILTER_UNAPPROVED, { sellerId });
+}
+
+export function buildApprovedProductsV2Endpoint(sellerId: string): string {
+    return buildEndpoint(PRODUCT_V2_ENDPOINTS.FILTER_APPROVED, { sellerId });
+}
+
+export function buildUpdateUnapprovedProductV2Endpoint(sellerId: string): string {
+    return buildEndpoint(PRODUCT_V2_ENDPOINTS.UPDATE_UNAPPROVED, { sellerId });
+}
+
+export function buildUpdateApprovedContentV2Endpoint(sellerId: string): string {
+    return buildEndpoint(PRODUCT_V2_ENDPOINTS.UPDATE_APPROVED_CONTENT, { sellerId });
+}
+
+export function buildUpdateApprovedVariantV2Endpoint(sellerId: string): string {
+    return buildEndpoint(PRODUCT_V2_ENDPOINTS.UPDATE_APPROVED_VARIANT, { sellerId });
+}
+
+export function buildUpdateDeliveryOptionV2Endpoint(sellerId: string): string {
+    return buildEndpoint(PRODUCT_V2_ENDPOINTS.UPDATE_DELIVERY_OPTION, { sellerId });
+}
+
+export function buildCategoryAttributesV2Endpoint(categoryId: number): string {
+    return buildEndpoint(CATEGORY_V2_ENDPOINTS.ATTRIBUTES, { categoryId });
+}
+
+export function buildCategoryAttributeValuesV2Endpoint(categoryId: number, attributeId: number): string {
+    return buildEndpoint(CATEGORY_V2_ENDPOINTS.ATTRIBUTE_VALUES, { categoryId, attributeId });
 }

@@ -30,6 +30,22 @@ import {
     OtherFinancialsFilters,
     SettlementRecord,
     OtherFinancialsRecord,
+    // V2 Types
+    CreateProductV2Request,
+    BatchRequestResponse,
+    ProductBasicInfoV2,
+    UnapprovedProductFiltersV2,
+    UnapprovedProductV2,
+    PaginatedResponseV2,
+    ApprovedProductFiltersV2,
+    ApprovedProductV2,
+    UpdateUnapprovedProductV2Request,
+    UpdateApprovedContentV2Request,
+    UpdateApprovedVariantV2Request,
+    UpdateDeliveryOptionV2Request,
+    CategoryAttributeListV2Response,
+    CategoryAttributeValueV2,
+    CategoryAttributeValuesFiltersV2,
 } from './types';
 import {
     BASE_URLS,
@@ -44,6 +60,17 @@ import {
     buildClaimIssueReasonsEndpoint,
     buildSettlementsEndpoint,
     buildOtherFinancialsEndpoint,
+    // V2 Endpoint Builders
+    buildCreateProductV2Endpoint,
+    buildProductBasicInfoV2Endpoint,
+    buildUnapprovedProductsV2Endpoint,
+    buildApprovedProductsV2Endpoint,
+    buildUpdateUnapprovedProductV2Endpoint,
+    buildUpdateApprovedContentV2Endpoint,
+    buildUpdateApprovedVariantV2Endpoint,
+    buildUpdateDeliveryOptionV2Endpoint,
+    buildCategoryAttributesV2Endpoint,
+    buildCategoryAttributeValuesV2Endpoint,
 } from './endpoints';
 import {
     buildQueryString,
@@ -68,7 +95,7 @@ import {
  * ```
  */
 /** Paket versiyonu */
-const PACKAGE_VERSION = '1.2.0';
+const PACKAGE_VERSION = '2.0.0';
 
 /** Default timeout (ms) */
 const DEFAULT_TIMEOUT = 30000;
@@ -213,11 +240,14 @@ export class TrendyolClient {
     }
 
     // ============================================
-    // ÜRÜN İŞLEMLERİ
+    // ÜRÜN İŞLEMLERİ (v1 - Legacy)
+    // ⚠️ v1 servisleri 10 Ağustos 2026'da kapanacak
+    // Yeni entegrasyonlar için v2 metodlarını kullanın
     // ============================================
 
     /**
-     * Ürünleri listele
+     * Ürünleri listele (v1)
+     * @deprecated v1 servisi 10 Ağustos 2026'da kapanacak. Yerine {@link getApprovedProductsV2} veya {@link getUnapprovedProductsV2} kullanın.
      */
     async getProducts(filters: ProductFilters = {}): Promise<ApiResponse<TrendyolProduct[]>> {
         const pagination = buildPaginationParams(filters.page, filters.size);
@@ -259,7 +289,8 @@ export class TrendyolClient {
     }
 
     /**
-     * Barkodla ürün ara
+     * Barkodla ürün ara (v1)
+     * @deprecated v1 servisi 10 Ağustos 2026'da kapanacak. Yerine {@link getProductBasicInfoV2} kullanın.
      */
     async getProductByBarcode(barcode: string): Promise<ApiResponse<TrendyolProduct | null>> {
         const response = await this.getProducts({ barcode, size: 1 });
@@ -395,7 +426,8 @@ export class TrendyolClient {
     }
 
     /**
-     * Kategori özelliklerini getir
+     * Kategori özelliklerini getir (v1)
+     * @deprecated v1 servisi 10 Ağustos 2026'da kapanacak. Yerine {@link getCategoryAttributesV2} kullanın.
      */
     async getCategoryAttributes(categoryId: number): Promise<ApiResponse<CategoryAttribute[]>> {
         validateRequired(categoryId, 'categoryId');
@@ -695,6 +727,338 @@ export class TrendyolClient {
         }
 
         return response as ApiResponse<OtherFinancialsRecord[]>;
+    }
+
+    // ============================================
+    // ÜRÜN İŞLEMLERİ v2 (Content-Based Model)
+    // 10 Şubat 2026 - Trendyol yeni nesil servisler
+    // ============================================
+
+    /**
+     * v2 Ürün Oluştur (Content-Based)
+     *
+     * Trendyol'un yeni content bazlı yapısında ürün oluşturur.
+     * Varyantlar aynı productMainId ile gruplandırılır.
+     * Yanıtta dönen batchRequestId ile işlem durumu takip edilir.
+     *
+     * @param data Ürün oluşturma isteği (max 1.000 ürün)
+     * @returns batchRequestId içeren yanıt
+     *
+     * @example
+     * ```typescript
+     * const result = await client.createProductV2({
+     *     items: [{
+     *         barcode: '1234567890',
+     *         title: 'Örnek Ürün',
+     *         description: '<p>Açıklama</p>',
+     *         productMainId: 'MAIN-001',
+     *         brandId: 1791,
+     *         categoryId: 411,
+     *         quantity: 100,
+     *         stockCode: 'STK-001',
+     *         dimensionalWeight: 2,
+     *         listPrice: 199.99,
+     *         salePrice: 149.99,
+     *         vatRate: 10,
+     *         images: [{ url: 'https://example.com/img.jpg' }],
+     *         attributes: [{ attributeId: 338, attributeValueIds: [6980] }]
+     *     }]
+     * });
+     * ```
+     */
+    async createProductV2(data: CreateProductV2Request): Promise<ApiResponse<BatchRequestResponse>> {
+        validateRequired(data.items, 'items');
+        const endpoint = buildCreateProductV2Endpoint(this.config.supplierId);
+        return this.post<BatchRequestResponse>(endpoint, data);
+    }
+
+    /**
+     * v2 Ürün Temel Bilgilerini Getir (Barkod ile)
+     *
+     * Belirtilen barkod için onay durumu, contentId ve listingId bilgilerini döner.
+     *
+     * @param barcode Ürün barkodu
+     * @returns Ürün temel bilgileri
+     *
+     * @example
+     * ```typescript
+     * const info = await client.getProductBasicInfoV2('1234567890');
+     * if (info.data?.approved) {
+     *     console.log('Content ID:', info.data.contentId);
+     * }
+     * ```
+     */
+    async getProductBasicInfoV2(barcode: string): Promise<ApiResponse<ProductBasicInfoV2>> {
+        validateRequired(barcode, 'barcode');
+        const endpoint = buildProductBasicInfoV2Endpoint(this.config.supplierId, barcode);
+        return this.get<ProductBasicInfoV2>(endpoint);
+    }
+
+    /**
+     * v2 Onaysız Ürünleri Listele
+     *
+     * Henüz onay almamış veya reddedilmiş ürünleri filtreler.
+     * 10.000+ kayıt için nextPageToken ile sayfalama destekler.
+     *
+     * @param filters Filtreleme parametreleri
+     * @returns Sayfalanmış onaysız ürün listesi
+     *
+     * @example
+     * ```typescript
+     * const rejected = await client.getUnapprovedProductsV2({
+     *     status: 'rejected',
+     *     size: 50
+     * });
+     * rejected.data?.content.forEach(p => {
+     *     console.log(p.barcode, p.rejectReasonDetails);
+     * });
+     * ```
+     */
+    async getUnapprovedProductsV2(
+        filters: UnapprovedProductFiltersV2 = {}
+    ): Promise<ApiResponse<PaginatedResponseV2<UnapprovedProductV2>>> {
+        const params: Record<string, any> = {};
+
+        if (filters.barcode) params.barcode = filters.barcode;
+        if (filters.startDate) params.startDate = filters.startDate;
+        if (filters.endDate) params.endDate = filters.endDate;
+        if (filters.page !== undefined) params.page = filters.page;
+        if (filters.dateQueryType) params.dateQueryType = filters.dateQueryType;
+        if (filters.size !== undefined) params.size = Math.min(filters.size, 1000);
+        if (filters.supplierId) params.supplierId = filters.supplierId;
+        if (filters.stockCode) params.stockCode = filters.stockCode;
+        if (filters.productMainId) params.productMainId = filters.productMainId;
+        if (filters.brandIds) params.brandIds = filters.brandIds.join(',');
+        if (filters.status) params.status = filters.status;
+        if (filters.nextPageToken) params.nextPageToken = filters.nextPageToken;
+
+        const endpoint = buildUnapprovedProductsV2Endpoint(this.config.supplierId) + buildQueryString(params);
+        return this.get<PaginatedResponseV2<UnapprovedProductV2>>(endpoint);
+    }
+
+    /**
+     * v2 Onaylı Ürünleri Listele (Content-Based)
+     *
+     * Onaylanmış ürünleri content bazlı yapıda getirir.
+     * Her content altında varyantlar yer alır.
+     * 10.000+ kayıt için nextPageToken ile sayfalama destekler.
+     *
+     * @param filters Filtreleme parametreleri
+     * @returns Sayfalanmış onaylı ürün listesi (content-based)
+     *
+     * @example
+     * ```typescript
+     * const products = await client.getApprovedProductsV2({
+     *     status: 'onSale',
+     *     size: 50
+     * });
+     * products.data?.content.forEach(content => {
+     *     console.log('Content ID:', content.contentId, 'Title:', content.title);
+     *     content.variants?.forEach(v => {
+     *         console.log('  Varyant:', v.barcode, 'Fiyat:', v.price?.salePrice);
+     *     });
+     * });
+     * ```
+     */
+    async getApprovedProductsV2(
+        filters: ApprovedProductFiltersV2 = {}
+    ): Promise<ApiResponse<PaginatedResponseV2<ApprovedProductV2>>> {
+        const params: Record<string, any> = {};
+
+        if (filters.barcode) params.barcode = filters.barcode;
+        if (filters.startDate) params.startDate = filters.startDate;
+        if (filters.endDate) params.endDate = filters.endDate;
+        if (filters.page !== undefined) params.page = filters.page;
+        if (filters.dateQueryType) params.dateQueryType = filters.dateQueryType;
+        if (filters.size !== undefined) params.size = Math.min(filters.size, 100);
+        if (filters.supplierId) params.supplierId = filters.supplierId;
+        if (filters.stockCode) params.stockCode = filters.stockCode;
+        if (filters.productMainId) params.productMainId = filters.productMainId;
+        if (filters.brandIds) params.brandIds = filters.brandIds.join(',');
+        if (filters.status) params.status = filters.status;
+        if (filters.nextPageToken) params.nextPageToken = filters.nextPageToken;
+
+        const endpoint = buildApprovedProductsV2Endpoint(this.config.supplierId) + buildQueryString(params);
+        return this.get<PaginatedResponseV2<ApprovedProductV2>>(endpoint);
+    }
+
+    /**
+     * v2 Onaysız Ürün Güncelle
+     *
+     * Henüz onay almamış ürünlerin tüm bilgilerini günceller.
+     *
+     * @param data Güncelleme isteği (max 1.000 ürün)
+     * @returns batchRequestId içeren yanıt
+     *
+     * @example
+     * ```typescript
+     * const result = await client.updateUnapprovedProductV2({
+     *     items: [{
+     *         barcode: '1234567890',
+     *         title: 'Güncellenmiş Başlık',
+     *         images: [{ url: 'https://example.com/new-img.jpg' }]
+     *     }]
+     * });
+     * ```
+     */
+    async updateUnapprovedProductV2(
+        data: UpdateUnapprovedProductV2Request
+    ): Promise<ApiResponse<BatchRequestResponse>> {
+        validateRequired(data.items, 'items');
+        const endpoint = buildUpdateUnapprovedProductV2Endpoint(this.config.supplierId);
+        return this.post<BatchRequestResponse>(endpoint, data);
+    }
+
+    /**
+     * v2 Onaylı Ürün Content Güncelle
+     *
+     * Onaylanmış ürünlerin content bilgilerini günceller (başlık, açıklama, görseller, özellikler).
+     * NOT: barcode, productMainId, brandId, categoryId ve slicer/varianter özellikler güncellenemez.
+     * NOT: Özellik güncellerken TÜM özellik/değer çiftleri gönderilmelidir.
+     *
+     * @param data Güncelleme isteği (max 1.000 content)
+     * @returns batchRequestId içeren yanıt
+     *
+     * @example
+     * ```typescript
+     * const result = await client.updateApprovedContentV2({
+     *     items: [{
+     *         contentId: 9510902,
+     *         title: 'Yeni Başlık',
+     *         description: '<p>Yeni açıklama</p>'
+     *     }]
+     * });
+     * ```
+     */
+    async updateApprovedContentV2(
+        data: UpdateApprovedContentV2Request
+    ): Promise<ApiResponse<BatchRequestResponse>> {
+        validateRequired(data.items, 'items');
+        const endpoint = buildUpdateApprovedContentV2Endpoint(this.config.supplierId);
+        return this.post<BatchRequestResponse>(endpoint, data);
+    }
+
+    /**
+     * v2 Onaylı Ürün Varyant Güncelle
+     *
+     * Onaylanmış ürünlerin varyant bazlı bilgilerini günceller
+     * (stokCode, vatRate, dimensionalWeight, lotNumber, adresler vb.).
+     *
+     * @param data Güncelleme isteği (max 1.000 varyant)
+     * @returns batchRequestId içeren yanıt
+     *
+     * @example
+     * ```typescript
+     * const result = await client.updateApprovedVariantV2({
+     *     items: [{
+     *         barcode: '1234567890',
+     *         stockCode: 'YENİ-STK-001',
+     *         vatRate: 20
+     *     }]
+     * });
+     * ```
+     */
+    async updateApprovedVariantV2(
+        data: UpdateApprovedVariantV2Request
+    ): Promise<ApiResponse<BatchRequestResponse>> {
+        validateRequired(data.items, 'items');
+        const endpoint = buildUpdateApprovedVariantV2Endpoint(this.config.supplierId);
+        return this.post<BatchRequestResponse>(endpoint, data);
+    }
+
+    /**
+     * v2 Teslimat Bilgisi Güncelle
+     *
+     * Ürünlerin teslimat seçeneklerini günceller (teslimat süresi, hızlı teslimat tipi).
+     *
+     * @param data Güncelleme isteği (max 1.000 ürün)
+     * @returns batchRequestId içeren yanıt
+     *
+     * @example
+     * ```typescript
+     * const result = await client.updateDeliveryOptionV2({
+     *     items: [{
+     *         barcode: '1234567890',
+     *         deliveryOption: {
+     *             deliveryDuration: 1,
+     *             fastDeliveryType: 'SAME_DAY_SHIPPING'
+     *         }
+     *     }]
+     * });
+     * ```
+     */
+    async updateDeliveryOptionV2(
+        data: UpdateDeliveryOptionV2Request
+    ): Promise<ApiResponse<BatchRequestResponse>> {
+        validateRequired(data.items, 'items');
+        const endpoint = buildUpdateDeliveryOptionV2Endpoint(this.config.supplierId);
+        return this.post<BatchRequestResponse>(endpoint, data);
+    }
+
+    // ============================================
+    // KATEGORİ İŞLEMLERİ v2
+    // ============================================
+
+    /**
+     * v2 Kategori Özellik Listesi
+     *
+     * Belirtilen kategorinin özelliklerini getirir.
+     * Yanıtta varianter, slicer, allowCustom, allowMultipleAttributeValues gibi
+     * content-based yapıya özel alanlar yer alır.
+     *
+     * @param categoryId Kategori ID'si
+     * @returns Kategori özellik listesi
+     *
+     * @example
+     * ```typescript
+     * const attrs = await client.getCategoryAttributesV2(411);
+     * attrs.data?.categoryAttributes.forEach(attr => {
+     *     console.log(attr.attribute.name, 'Zorunlu:', attr.required, 'Varyant:', attr.varianter);
+     * });
+     * ```
+     */
+    async getCategoryAttributesV2(
+        categoryId: number
+    ): Promise<ApiResponse<CategoryAttributeListV2Response>> {
+        validateRequired(categoryId, 'categoryId');
+        const endpoint = buildCategoryAttributesV2Endpoint(categoryId);
+        return this.get<CategoryAttributeListV2Response>(endpoint);
+    }
+
+    /**
+     * v2 Kategori Özellik Değerleri Listesi
+     *
+     * Belirtilen kategori ve özellik için geçerli değerleri sayfalanmış olarak getirir.
+     *
+     * @param categoryId Kategori ID'si
+     * @param attributeId Özellik ID'si
+     * @param filters Filtreleme parametreleri (sayfalama, değer adı/ID filtresi)
+     * @returns Sayfalanmış özellik değerleri listesi
+     *
+     * @example
+     * ```typescript
+     * const values = await client.getCategoryAttributeValuesV2(411, 338, { size: 100 });
+     * values.data?.content.forEach(v => {
+     *     console.log(v.attributeValueId, v.attributeValueName);
+     * });
+     * ```
+     */
+    async getCategoryAttributeValuesV2(
+        categoryId: number,
+        attributeId: number,
+        filters: CategoryAttributeValuesFiltersV2 = {}
+    ): Promise<ApiResponse<PaginatedResponseV2<CategoryAttributeValueV2>>> {
+        validateRequired(categoryId, 'categoryId');
+        validateRequired(attributeId, 'attributeId');
+
+        const params: Record<string, any> = {};
+        if (filters.size !== undefined) params.size = Math.min(filters.size, 1000);
+        if (filters.page !== undefined) params.page = filters.page;
+        if (filters.attributeValueId) params.attributeValueId = filters.attributeValueId;
+        if (filters.attributeValueName) params.attributeValueName = filters.attributeValueName;
+
+        const endpoint = buildCategoryAttributeValuesV2Endpoint(categoryId, attributeId) + buildQueryString(params);
+        return this.get<PaginatedResponseV2<CategoryAttributeValueV2>>(endpoint);
     }
 
     // ============================================
