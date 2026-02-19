@@ -53,6 +53,14 @@ export function endOfToday(): number {
 }
 
 // ============================================
+// DATE RESOLUTION
+// ============================================
+
+export function resolveDate(value: string | number): number {
+    return typeof value === 'string' ? dateToTimestamp(value) : value;
+}
+
+// ============================================
 // QUERY STRING UTILITIES
 // ============================================
 

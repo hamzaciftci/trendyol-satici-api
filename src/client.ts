@@ -76,7 +76,7 @@ import {
     buildQueryString,
     buildPaginationParams,
     extractContent,
-    dateToTimestamp,
+    resolveDate,
     validateRequired,
 } from './utils';
 
@@ -152,14 +152,15 @@ export class TrendyolClient {
             };
 
             const req = httpModule.request(options, (res) => {
-                let data = '';
+                const chunks: Buffer[] = [];
 
-                res.on('data', (chunk) => {
-                    data += chunk;
+                res.on('data', (chunk: Buffer) => {
+                    chunks.push(chunk);
                 });
 
                 res.on('end', () => {
                     try {
+                        const data = Buffer.concat(chunks).toString();
                         const parsedData = data ? JSON.parse(data) : null;
                         
                         if (res.statusCode && res.statusCode >= 200 && res.statusCode < 300) {
@@ -180,7 +181,7 @@ export class TrendyolClient {
                         resolve({
                             success: false,
                             statusCode: res.statusCode || 500,
-                            error: `Parse error: ${data}`,
+                            error: `Parse error: ${Buffer.concat(chunks).toString()}`,
                         });
                     }
                 });
@@ -263,16 +264,8 @@ export class TrendyolClient {
         if (filters.brandIds) params.brandIds = filters.brandIds;
         if (filters.productMainId) params.productMainId = filters.productMainId;
         
-        if (filters.startDate) {
-            params.startDate = typeof filters.startDate === 'string' 
-                ? dateToTimestamp(filters.startDate) 
-                : filters.startDate;
-        }
-        if (filters.endDate) {
-            params.endDate = typeof filters.endDate === 'string' 
-                ? dateToTimestamp(filters.endDate) 
-                : filters.endDate;
-        }
+        if (filters.startDate) params.startDate = resolveDate(filters.startDate);
+        if (filters.endDate) params.endDate = resolveDate(filters.endDate);
         if (filters.dateQueryType) params.dateQueryType = filters.dateQueryType;
 
         const endpoint = buildProductsEndpoint(this.config.supplierId) + buildQueryString(params);
@@ -327,16 +320,8 @@ export class TrendyolClient {
         if (filters.orderByField) params.orderByField = filters.orderByField;
         if (filters.orderByDirection) params.orderByDirection = filters.orderByDirection;
         
-        if (filters.startDate) {
-            params.startDate = typeof filters.startDate === 'string' 
-                ? dateToTimestamp(filters.startDate) 
-                : filters.startDate;
-        }
-        if (filters.endDate) {
-            params.endDate = typeof filters.endDate === 'string' 
-                ? dateToTimestamp(filters.endDate) 
-                : filters.endDate;
-        }
+        if (filters.startDate) params.startDate = resolveDate(filters.startDate);
+        if (filters.endDate) params.endDate = resolveDate(filters.endDate);
 
         const endpoint = buildOrdersEndpoint(this.config.supplierId) + buildQueryString(params);
         const response = await this.get<any>(endpoint);
@@ -461,16 +446,8 @@ export class TrendyolClient {
         if (filters.orderByField) params.orderByField = filters.orderByField;
         if (filters.orderByDirection) params.orderByDirection = filters.orderByDirection;
         
-        if (filters.startDate) {
-            params.startDate = typeof filters.startDate === 'string' 
-                ? dateToTimestamp(filters.startDate) 
-                : filters.startDate;
-        }
-        if (filters.endDate) {
-            params.endDate = typeof filters.endDate === 'string' 
-                ? dateToTimestamp(filters.endDate) 
-                : filters.endDate;
-        }
+        if (filters.startDate) params.startDate = resolveDate(filters.startDate);
+        if (filters.endDate) params.endDate = resolveDate(filters.endDate);
 
         const endpoint = buildQuestionsEndpoint(this.config.supplierId) + buildQueryString(params);
         const response = await this.get<any>(endpoint);
@@ -564,16 +541,8 @@ export class TrendyolClient {
         if (filters.orderByField) params.orderByField = filters.orderByField;
         if (filters.orderByDirection) params.orderByDirection = filters.orderByDirection;
         
-        if (filters.startDate) {
-            params.startDate = typeof filters.startDate === 'string' 
-                ? dateToTimestamp(filters.startDate) 
-                : filters.startDate;
-        }
-        if (filters.endDate) {
-            params.endDate = typeof filters.endDate === 'string' 
-                ? dateToTimestamp(filters.endDate) 
-                : filters.endDate;
-        }
+        if (filters.startDate) params.startDate = resolveDate(filters.startDate);
+        if (filters.endDate) params.endDate = resolveDate(filters.endDate);
 
         const endpoint = buildClaimsEndpoint(this.config.supplierId) + buildQueryString(params);
         const response = await this.get<any>(endpoint);
