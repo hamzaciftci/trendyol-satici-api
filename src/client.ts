@@ -328,14 +328,23 @@ export class TrendyolClient {
         if (filters.orderByDirection) params.orderByDirection = filters.orderByDirection;
         
         if (filters.startDate) {
-            params.startDate = typeof filters.startDate === 'string' 
-                ? dateToTimestamp(filters.startDate) 
+            params.startDate = typeof filters.startDate === 'string'
+                ? dateToTimestamp(filters.startDate)
                 : filters.startDate;
         }
         if (filters.endDate) {
-            params.endDate = typeof filters.endDate === 'string' 
-                ? dateToTimestamp(filters.endDate) 
+            params.endDate = typeof filters.endDate === 'string'
+                ? dateToTimestamp(filters.endDate)
                 : filters.endDate;
+        }
+
+        const MAX_ORDER_DAYS = 30;
+        const maxLookback = Date.now() - (MAX_ORDER_DAYS * 24 * 60 * 60 * 1000);
+        if (params.startDate && params.startDate < maxLookback) {
+            throw new Error(
+                `startDate en fazla ${MAX_ORDER_DAYS} gün geriye gidebilir. ` +
+                `Trendyol API 5 Mart 2026 itibarıyla maksimum 30 günlük sipariş verisini desteklemektedir.`
+            );
         }
 
         const endpoint = buildOrdersEndpoint(this.config.supplierId) + buildQueryString(params);
@@ -355,9 +364,16 @@ export class TrendyolClient {
      * Son X günün siparişlerini getir
      */
     async getRecentOrders(days: number = 7, size: number = 50): Promise<ApiResponse<TrendyolOrder[]>> {
+        if (days > 30) {
+            throw new Error(
+                `getRecentOrders maksimum 30 gün destekler. ` +
+                `Trendyol API 5 Mart 2026 itibarıyla maksimum 30 günlük sipariş verisini desteklemektedir.`
+            );
+        }
+
         const endDate = Date.now();
         const startDate = endDate - (days * 24 * 60 * 60 * 1000);
-        
+
         return this.getOrders({
             startDate,
             endDate,

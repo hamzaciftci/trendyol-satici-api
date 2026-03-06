@@ -276,6 +276,10 @@ export interface PackageHistory {
 export interface OrderFilters {
     page?: number;
     size?: number;
+    /**
+     * Başlangıç tarihi (string "YYYY-MM-DD" veya timestamp ms).
+     * Trendyol API maksimum 30 günlük geçmiş veri destekler (5 Mart 2026 itibarıyla).
+     */
     startDate?: string | number;
     endDate?: string | number;
     status?: string;
