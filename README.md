@@ -40,6 +40,30 @@ Bu surum, Trendyol'un yeni v2 content-based API altyapisina tam uyumlu olarak gu
 
 ---
 
+## Siparis Sorgusunda 30 Gunluk Limit (5 Mart 2026)
+
+> **5 Mart 2026** tarihinden itibaren Trendyol, "Siparis Paketlerini Cekme" servisinde maksimum sorgu araligini **3 aydan 30 güne** dusurdu.
+
+Bu degisiklikle birlikte `getOrders()` ve `getRecentOrders()` metodlari artik **son 30 gunu** asacak sorgularda otomatik olarak hata firlatmaktadir.
+
+```typescript
+// HATALI - 30 gunden eski tarih
+await client.getOrders({ startDate: daysAgo(60) });
+// Error: startDate en fazla 30 gun geriye gidebilir.
+
+// HATALI - 30 gunden fazla gun
+await client.getRecentOrders(45);
+// Error: getRecentOrders maksimum 30 gun destekler.
+
+// DOGRU - 30 gun ve alti
+await client.getRecentOrders(30);
+await client.getOrders({ startDate: daysAgo(15) });
+```
+
+> 30 gunden eski siparis verileri icin [Trendyol Satici Paneli](https://partner.trendyol.com/) kullanilabilir.
+
+---
+
 ## Kurulum
 
 ```bash
@@ -139,8 +163,8 @@ attrs.data?.categoryAttributes.forEach(attr => {
 
 | Ozellik | Metod | Aciklama |
 |---------|-------|----------|
-| **Siparisler** | `getOrders()` | Siparis listesi |
-| | `getRecentOrders()` | Son X gunun siparisleri |
+| **Siparisler** | `getOrders()` | Siparis listesi (max 30 gunluk aralik) |
+| | `getRecentOrders()` | Son X gunun siparisleri (max 30 gun) |
 | **Iadeler** | `getClaims()` | Iade talepleri |
 | | `getRecentClaims()` | Son X gunun iadeleri |
 | | `getClaimIssueReasons()` | Iade nedenleri |
