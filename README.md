@@ -40,6 +40,35 @@ Bu surum, Trendyol'un yeni v2 content-based API altyapisina tam uyumlu olarak gu
 
 ---
 
+## Digital Goods - Alternatif Teslimat Destegi (18 Mart 2026)
+
+> Trendyol, siparis paketleri ve Webhook modelinde `lines` objesi altina **`businessUnit`** alani ekledi.
+
+### Degisiklikler
+
+- `businessUnit === "Digital Goods"` olan siparislerde musteri telefon numarasi `null` doner.
+- Dijital urunler icin **Alternatif Teslimat ile Gonderim** servisi uzerinden kod gonderilebilir.
+- `businessUnit` "Digital Goods" olmayan paketlerde dijital kod gonderimi yapilmak istenirse `digital.good.business.unit.not.valid` hatasi doner.
+
+```typescript
+// businessUnit kontrolu yaparak dijital kod gonder
+const orders = await client.getRecentOrders(7);
+
+for (const order of orders.data ?? []) {
+    const isDigital = order.lines?.some(l => l.businessUnit === 'Digital Goods');
+    if (isDigital && order.shipmentPackageId) {
+        const result = await client.sendDigitalDelivery(order.shipmentPackageId, {
+            digitalCode: 'XXXX-YYYY-ZZZZ'
+        });
+        console.log('Gonderildi:', result.success);
+    }
+}
+```
+
+> **Not:** Digital Goods siparislerde musteri telefon numarasi null gelir, entegrasyonunuzda buna gore onlem alin.
+
+---
+
 ## Siparis Sorgusunda 30 Gunluk Limit (5 Mart 2026)
 
 > **5 Mart 2026** tarihinden itibaren Trendyol, "Siparis Paketlerini Cekme" servisinde maksimum sorgu araligini **3 aydan 30 güne** dusurdu.
@@ -179,6 +208,7 @@ attrs.data?.categoryAttributes.forEach(attr => {
 | **Webhook** | `getWebhooks()` | Webhook listesi |
 | | `createWebhook()` | Webhook olusturma |
 | | `deleteWebhook()` | Webhook silme |
+| **Digital Goods** | `sendDigitalDelivery()` | Alternatif teslimat ile dijital kod gonderme (`businessUnit="Digital Goods"` siparislerde) |
 
 ## v2 Kullanim Ornekleri
 

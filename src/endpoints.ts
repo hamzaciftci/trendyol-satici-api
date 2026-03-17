@@ -39,6 +39,8 @@ export const ORDER_ENDPOINTS = {
     SHIPMENT_PACKAGES: '/integration/order/sellers/{supplierId}/shipment-packages',
     UPDATE_TRACKING: '/integration/order/sellers/{supplierId}/shipment-packages/{shipmentPackageId}/update-tracking',
     UPDATE_STATUS: '/integration/order/sellers/{supplierId}/shipment-packages',
+    /** Alternatif Teslimat ile Dijital Ürün Gönderimi - yalnızca businessUnit="Digital Goods" siparişlerde */
+    DIGITAL_DELIVER: '/integration/order/sellers/{supplierId}/shipment-packages/{shipmentPackageId}/alternative-deliver',
 } as const;
 
 // ============================================
@@ -143,6 +145,10 @@ export function buildProductsEndpoint(supplierId: string): string {
 
 export function buildOrdersEndpoint(supplierId: string): string {
     return buildEndpoint(ORDER_ENDPOINTS.ORDERS, { supplierId });
+}
+
+export function buildDigitalDeliverEndpoint(supplierId: string, shipmentPackageId: number): string {
+    return buildEndpoint(ORDER_ENDPOINTS.DIGITAL_DELIVER, { supplierId, shipmentPackageId });
 }
 
 export function buildQuestionsEndpoint(supplierId: string): string {

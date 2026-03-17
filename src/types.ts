@@ -208,9 +208,16 @@ export interface TrendyolOrderLine {
     productSize?: string;
     productColor?: string;
     orderLineItemStatusName?: string;
-    
+
     /** Satıcı ID */
     sellerId?: number;
+
+    /**
+     * İş birimi
+     * "Digital Goods" değerini alan siparişlerde müşteri telefon numarası null döner.
+     * Alternatif Teslimat ile dijital kod gönderilebilir.
+     */
+    businessUnit?: string;
 
     [key: string]: any;
 }
@@ -734,6 +741,33 @@ export interface OtherFinancialsRecord {
     /** Ödeme tarihi */
     paymentDate?: number;
 
+    [key: string]: any;
+}
+
+// ============================================
+// DIGITAL GOODS TYPES
+// Güncelleme: businessUnit alanı eklendi, Alternatif Teslimat desteği
+// @see https://developers.trendyol.com/docs/alternatif-teslimat-i%CC%87le-g%C3%B6nderim
+// ============================================
+
+/**
+ * Alternatif Teslimat ile Dijital Ürün Gönderimi İsteği
+ *
+ * Yalnızca businessUnit === "Digital Goods" olan siparişler için kullanılabilir.
+ * Aksi hâlde API "digital.good.business.unit.not.valid" hatası döner.
+ *
+ * @see https://developers.trendyol.com/docs/alternatif-teslimat-i%CC%87le-g%C3%B6nderim
+ */
+export interface SendDigitalDeliveryRequest {
+    /** Dijital ürün kodu (örn: oyun kodu, lisans anahtarı) */
+    digitalCode: string;
+}
+
+/**
+ * Alternatif Teslimat Yanıtı
+ */
+export interface SendDigitalDeliveryResponse {
+    success?: boolean;
     [key: string]: any;
 }
 

@@ -46,6 +46,8 @@ import {
     CategoryAttributeListV2Response,
     CategoryAttributeValueV2,
     CategoryAttributeValuesFiltersV2,
+    SendDigitalDeliveryRequest,
+    SendDigitalDeliveryResponse,
 } from './types';
 import {
     BASE_URLS,
@@ -71,6 +73,7 @@ import {
     buildUpdateDeliveryOptionV2Endpoint,
     buildCategoryAttributesV2Endpoint,
     buildCategoryAttributeValuesV2Endpoint,
+    buildDigitalDeliverEndpoint,
 } from './endpoints';
 import {
     buildQueryString,
@@ -379,6 +382,48 @@ export class TrendyolClient {
             endDate,
             size,
         });
+    }
+
+    // ============================================
+    // DIGITAL GOODS - ALTERNATİF TESLİMAT
+    // Güncelleme: businessUnit="Digital Goods" siparişler için dijital kod gönderimi
+    // @see https://developers.trendyol.com/docs/alternatif-teslimat-i%CC%87le-g%C3%B6nderim
+    // ============================================
+
+    /**
+     * Alternatif Teslimat ile Dijital Ürün Gönder
+     *
+     * Yalnızca sipariş satırında `businessUnit === "Digital Goods"` olan paketler için kullanılabilir.
+     * Gönderilen dijital kod Trendyol tarafından doğrudan müşteriye iletilir.
+     *
+     * ⚠️ `businessUnit` "Digital Goods" olmayan paketlerde "digital.good.business.unit.not.valid" hatası döner.
+     * ⚠️ "Digital Goods" siparişlerde müşteri telefon numarası null gelir.
+     *
+     * @param shipmentPackageId Paket ID
+     * @param data Dijital kod içeren istek
+     *
+     * @example
+     * ```typescript
+     * // Önce paketin businessUnit alanını kontrol et
+     * const orders = await client.getRecentOrders(7);
+     * for (const order of orders.data ?? []) {
+     *     const isDigital = order.lines?.some(l => l.businessUnit === 'Digital Goods');
+     *     if (isDigital && order.shipmentPackageId) {
+     *         await client.sendDigitalDelivery(order.shipmentPackageId, {
+     *             digitalCode: 'XXXX-YYYY-ZZZZ'
+     *         });
+     *     }
+     * }
+     * ```
+     */
+    async sendDigitalDelivery(
+        shipmentPackageId: number,
+        data: SendDigitalDeliveryRequest,
+    ): Promise<ApiResponse<SendDigitalDeliveryResponse>> {
+        validateRequired(shipmentPackageId, 'shipmentPackageId');
+        validateRequired(data.digitalCode, 'digitalCode');
+        const endpoint = buildDigitalDeliverEndpoint(this.config.supplierId, shipmentPackageId);
+        return this.post<SendDigitalDeliveryResponse>(endpoint, data);
     }
 
     // ============================================
