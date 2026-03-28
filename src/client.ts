@@ -98,7 +98,7 @@ import {
  * ```
  */
 /** Paket versiyonu */
-const PACKAGE_VERSION = '2.0.0';
+const PACKAGE_VERSION = '2.0.1';
 
 /** Default timeout (ms) */
 const DEFAULT_TIMEOUT = 30000;
@@ -937,6 +937,7 @@ export class TrendyolClient {
         if (filters.productMainId) params.productMainId = filters.productMainId;
         if (filters.brandIds) params.brandIds = filters.brandIds.join(',');
         if (filters.status) params.status = filters.status;
+        if (filters.contentId) params.contentId = filters.contentId;
         if (filters.nextPageToken) params.nextPageToken = filters.nextPageToken;
 
         const endpoint = buildApprovedProductsV2Endpoint(this.config.supplierId) + buildQueryString(params);
@@ -1100,7 +1101,7 @@ export class TrendyolClient {
      * ```typescript
      * const values = await client.getCategoryAttributeValuesV2(411, 338, { size: 100 });
      * values.data?.content.forEach(v => {
-     *     console.log(v.attributeValueId, v.attributeValueName);
+     *     console.log(v.attributeValueId, v.attributeValue);
      * });
      * ```
      */

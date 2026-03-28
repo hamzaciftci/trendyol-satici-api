@@ -34,7 +34,7 @@ async function main() {
     const colorValues = await client.getCategoryAttributeValuesV2(411, 338, { size: 10 });
     if (colorValues.success && colorValues.data) {
         colorValues.data.content.forEach(v => {
-            console.log(`  - ${v.attributeValueName} (ID: ${v.attributeValueId})`);
+            console.log(`  - ${v.attributeValue} (ID: ${v.attributeValueId})`);
         });
     }
 
@@ -65,7 +65,7 @@ async function main() {
                 attributes: [
                     { attributeId: 338, attributeValueIds: [6980] },  // Renk: Kirmizi
                     { attributeId: 343, attributeValueIds: [4872] },  // Beden: 42
-                    { attributeId: 47, attributeValue: 'Suni Deri' }, // Materyal (serbest metin)
+                    { attributeId: 47, customAttributeValue: 'Suni Deri' }, // Materyal (serbest metin)
                 ],
             },
             // Varyant 2: Mavi (ayni content altinda)
@@ -92,7 +92,7 @@ async function main() {
                 attributes: [
                     { attributeId: 338, attributeValueIds: [6981] },  // Renk: Mavi
                     { attributeId: 343, attributeValueIds: [4872] },  // Beden: 42
-                    { attributeId: 47, attributeValue: 'Suni Deri' }, // Materyal
+                    { attributeId: 47, customAttributeValue: 'Suni Deri' }, // Materyal
                 ],
             },
         ],

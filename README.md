@@ -4,7 +4,7 @@
 
 ![Trendyol Satici API](https://img.shields.io/badge/Trendyol-Satıcı%20API-FF6000?style=for-the-badge&logo=typescript&logoColor=white)
 
-[![Version](https://img.shields.io/badge/version-2.0.0-blue.svg?style=flat-square)](https://github.com/hamzaciftci/trendyol-satici-api/releases)
+[![Version](https://img.shields.io/badge/version-2.0.1-blue.svg?style=flat-square)](https://github.com/hamzaciftci/trendyol-satici-api/releases)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](https://opensource.org/licenses/MIT)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-3178C6.svg?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Node.js](https://img.shields.io/badge/Node.js-18+-339933.svg?style=flat-square&logo=node.js&logoColor=white)](https://nodejs.org/)
@@ -14,6 +14,24 @@
 **v2.0 - Content-Based Product Model destegi**
 
 </div>
+
+---
+
+## v2.0.1 - API Tip Duzeltmeleri (28 Mart 2026)
+
+> Trendyol v2 API dokumantasyonu ile karsilastirma sonucu tespit edilen tip/alan adi tutarsizliklari duzeltildi.
+
+### Duzeltilen Hatalar
+
+| Alan | Eski | Yeni | Aciklama |
+|------|------|------|----------|
+| `ProductAttributeV2Request` | `attributeValue` | `customAttributeValue` | API dokumantasyonu serbest metin alani icin bu ismi kullaniyor |
+| `CategoryAttributeValueV2` | `attributeValueName` | `attributeValue` | API `attributeValue` donuyor, `attributeValueName` degil |
+| `ContentAttributeV2` | `attributeValues: {...}[]` (ic ice dizi) | `attributeValue: string` (duz yapi) | Her ozellik tek deger doner |
+| `UnapprovedProductV2.attributes` | `ProductAttributeV2Request[]` (request tipi) | `VariantAttributeV2[]` (response tipi) | Response ve request tipleri karistirilmisti |
+| `ApprovedProductFiltersV2` | `status` eksik `notOnSale`, `contentId` yok | `notOnSale` eklendi, `contentId` filtresi eklendi | Dokumantasyonda mevcut ama kodda yoktu |
+
+> **Not:** `customAttributeValue` alan adi degisikligi **breaking change** icermektedir. `attributeValue` kullaniyorsaniz kodunuzu guncellemeniz gerekmektedir.
 
 ---
 
@@ -339,7 +357,7 @@ Bir **content** birden fazla **varyant** icerir. Content seviyesinde baslik, aci
         "images": [{ "url": "https://example.com/img.jpg" }],
         "attributes": [
             { "attributeId": 338, "attributeValueIds": [6980] },
-            { "attributeId": 47, "attributeValue": "Ozel Deger" }
+            { "attributeId": 47, "customAttributeValue": "Ozel Deger" }
         ]
     }]
 }

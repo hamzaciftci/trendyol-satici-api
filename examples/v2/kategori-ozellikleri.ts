@@ -54,11 +54,11 @@ async function main() {
             if (values.success && values.data) {
                 console.log(`  Degerler (ilk 5 / ${values.data.totalElements}):`);
                 values.data.content.forEach(v => {
-                    console.log(`    - ${v.attributeValueName} (ID: ${v.attributeValueId})`);
+                    console.log(`    - ${v.attributeValue} (ID: ${v.attributeValueId})`);
                 });
             }
         } else {
-            console.log('  Degerler: Serbest metin (attributeValue alani ile)');
+            console.log('  Degerler: Serbest metin (customAttributeValue alani ile)');
         }
         console.log('');
     }
@@ -74,7 +74,7 @@ async function main() {
     if (search.success && search.data) {
         console.log(`"Kirmizi" araması: ${search.data.totalElements} sonuc`);
         search.data.content.forEach(v => {
-            console.log(`  ${v.attributeValueName} (ID: ${v.attributeValueId})`);
+            console.log(`  ${v.attributeValue} (ID: ${v.attributeValueId})`);
         });
     }
 }

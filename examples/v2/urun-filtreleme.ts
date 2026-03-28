@@ -110,8 +110,7 @@ async function onayliUrunleriListele() {
             if (content.attributes?.length) {
                 console.log('   Ozellikler:');
                 content.attributes.forEach(attr => {
-                    const values = attr.attributeValues.map(v => v.attributeValue).join(', ');
-                    console.log(`     ${attr.attributeName}: ${values}`);
+                    console.log(`     ${attr.attributeName}: ${attr.attributeValue}`);
                 });
             }
 

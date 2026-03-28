@@ -5,6 +5,20 @@ Tüm önemli değişiklikler bu dosyada belgelenir.
 Format [Keep a Changelog](https://keepachangelog.com/tr/1.0.0/) standardına,
 versiyonlama [Semantic Versioning](https://semver.org/lang/tr/) standardına uygundur.
 
+## [2.0.1] - 2026-03-28
+
+### Duzeltildi
+- `ProductAttributeV2Request.attributeValue` → `customAttributeValue` olarak yeniden adlandirildi (Trendyol v2 API dokumantasyonu ile uyum)
+- `CategoryAttributeValueV2.attributeValueName` → `attributeValue` olarak duzeltildi (API `attributeValue` donuyor)
+- `ContentAttributeV2` ic ice dizi yapi (`attributeValues[]`) → duz yapi (`attributeValue: string`, `attributeValueId?: number`) olarak duzeltildi
+- `UnapprovedProductV2.attributes` tipi `ProductAttributeV2Request[]` → `VariantAttributeV2[]` olarak duzeltildi
+- `ApprovedProductFiltersV2`'e `contentId` filtresi eklendi
+- `ApprovedProductFiltersV2.status`'a `'notOnSale'` degeri eklendi
+- `getApprovedProductsV2()` metoduna `contentId` parametre destegi eklendi
+- Tum ornek dosyalar ve testler yeni alan adlarina gore guncellendi
+
+> **NOT:** `customAttributeValue` degisikligi onceki surumle uyumsuz (breaking) bir degisikliktir.
+
 ## [2.0.0] - 2026-02-11
 
 ### BREAKING: Content-Based Product Model (v2)

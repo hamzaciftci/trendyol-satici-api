@@ -78,7 +78,7 @@ describe('createProductV2', () => {
                 images: [{ url: 'https://example.com/img.jpg' }],
                 attributes: [
                     { attributeId: 338, attributeValueIds: [6980] },
-                    { attributeId: 47, attributeValue: 'Ozel Deger' },
+                    { attributeId: 47, customAttributeValue: 'Ozel Deger' },
                 ],
             }],
         };
@@ -342,7 +342,7 @@ describe('updateApprovedContentV2', () => {
                 images: [{ url: 'https://example.com/updated.jpg' }],
                 attributes: [
                     { attributeId: 1, attributeValueIds: [1] },
-                    { attributeId: 2, attributeValue: 'Ozel' },
+                    { attributeId: 2, customAttributeValue: 'Ozel' },
                 ],
             }],
         };
@@ -497,8 +497,8 @@ describe('getCategoryAttributeValuesV2', () => {
             page: 0,
             size: 10,
             content: [
-                { attributeValueId: 6980, attributeValueName: 'Kirmizi' },
-                { attributeValueId: 6981, attributeValueName: 'Mavi' },
+                { attributeValueId: 6980, attributeValue: 'Kirmizi' },
+                { attributeValueId: 6981, attributeValue: 'Mavi' },
             ],
         };
 
@@ -519,7 +519,7 @@ describe('getCategoryAttributeValuesV2', () => {
         expect(result.success).toBe(true);
         expect(result.data?.totalElements).toBe(2);
         expect(result.data?.content).toHaveLength(2);
-        expect(result.data?.content[0].attributeValueName).toBe('Kirmizi');
+        expect(result.data?.content[0].attributeValue).toBe('Kirmizi');
     });
 
     test('bos categoryId ile hata', async () => {

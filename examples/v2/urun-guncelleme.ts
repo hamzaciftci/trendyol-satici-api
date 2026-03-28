@@ -33,7 +33,7 @@ async function onaysizUrunGuncelle() {
             attributes: [
                 { attributeId: 338, attributeValueIds: [6980] },
                 { attributeId: 343, attributeValueIds: [4872] },
-                { attributeId: 47, attributeValue: 'Dogal Deri' },
+                { attributeId: 47, customAttributeValue: 'Dogal Deri' },
             ],
         }],
     });

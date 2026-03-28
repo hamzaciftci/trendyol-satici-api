@@ -802,8 +802,8 @@ export interface DeliveryOptionV2 {
 
 /**
  * v2 Ürün Özelliği (Request)
- * attributeValueIds: ID listesi ile değer atama
- * attributeValue: Serbest metin ile özel değer atama (allowCustom=true ise)
+ * attributeValueIds: ID listesi ile değer atama (allowMultipleAttributeValues=true ise birden fazla)
+ * customAttributeValue: Serbest metin ile özel değer atama (allowCustom=true ise)
  */
 export interface ProductAttributeV2Request {
     /** Özellik ID'si (kategori özellik servisinden alınır) */
@@ -811,7 +811,7 @@ export interface ProductAttributeV2Request {
     /** Özellik değer ID'leri (allowMultipleAttributeValues=true ise birden fazla) */
     attributeValueIds?: number[];
     /** Serbest metin özellik değeri (allowCustom=true ise kullanılır) */
-    attributeValue?: string;
+    customAttributeValue?: string;
 }
 
 /**
@@ -995,7 +995,7 @@ export interface UnapprovedProductV2 {
     /** Görseller */
     media?: ProductImage[];
     /** Özellikler */
-    attributes?: ProductAttributeV2Request[];
+    attributes?: VariantAttributeV2[];
     /** Red nedeni detayları */
     rejectReasonDetails?: RejectReasonDetail[];
     /** Konum bazlı teslimat */
@@ -1047,8 +1047,10 @@ export interface ApprovedProductFiltersV2 {
     productMainId?: string;
     /** Marka ID'leri filtresi */
     brandIds?: number[];
+    /** Content ID filtresi */
+    contentId?: string;
     /** Durum filtresi */
-    status?: 'archived' | 'blacklisted' | 'locked' | 'onSale';
+    status?: 'archived' | 'blacklisted' | 'locked' | 'onSale' | 'notOnSale';
     /** Sayfalama token'ı (10.000+ kayıt için) */
     nextPageToken?: string;
 }
@@ -1157,17 +1159,17 @@ export interface ApprovedProductVariantV2 {
 
 /**
  * v2 Content Özelliği (Response)
+ * Her özellik tek bir değere sahiptir; birden fazla değer için attributes[] içinde tekrarlanır.
  */
 export interface ContentAttributeV2 {
     /** Özellik ID */
     attributeId: number;
     /** Özellik adı */
     attributeName: string;
-    /** Özellik değerleri */
-    attributeValues: {
-        attributeValueId?: number;
-        attributeValue: string;
-    }[];
+    /** Özellik değeri (metin) */
+    attributeValue: string;
+    /** Özellik değer ID (predefined değerlerde dolu gelir) */
+    attributeValueId?: number;
 }
 
 /**
@@ -1377,8 +1379,8 @@ export interface CategoryAttributeListV2Response {
 export interface CategoryAttributeValueV2 {
     /** Özellik değer ID */
     attributeValueId: number;
-    /** Özellik değer adı */
-    attributeValueName: string;
+    /** Özellik değeri */
+    attributeValue: string;
 }
 
 /**
